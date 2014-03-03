@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 -----------------------------------------------------------------------------
 -- |
 -- Copyright : (c) 2014 Ricky Elrod
@@ -11,6 +12,7 @@
 
 module Network.GPSD.Connection
   ( connectGPSD
+  , gpsdWatch
   ) where
 
 import Network.GPSD.Config
@@ -21,6 +23,14 @@ import System.IO.Streams hiding (connect)
 
 -- | Connect to a GPSD server. Does not block, and instead allows direct access
 -- to the underlying 'InputStream' and 'OutputStream'.
+--
+-- Typically, you'll call this like this:
+-- >>> (i, o) <- connectGPSD defaultConfig
+--
+-- ...then move on to actually using the stream.
+--
+-- Your likely next step is:
+-- >>> gpsdWatch o
 connectGPSD :: GPSDConfig
             -> IO (InputStream ByteString, OutputStream ByteString)
 connectGPSD (GPSDConfig h p) = withSocketsDo $ do
@@ -30,3 +40,7 @@ connectGPSD (GPSDConfig h p) = withSocketsDo $ do
   connect s serverAddr
   (i, o) <- socketToStreams s
   return (i, o)
+
+-- | Tell GPSD to start sending us data.
+gpsdWatch :: OutputStream ByteString -> IO ()
+gpsdWatch = write (Just "?WATCH={\"enable\":true, \"json\":true}")
