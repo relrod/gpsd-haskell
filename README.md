@@ -1,6 +1,6 @@
 # gpsd-haskell
 
-Provides a Haskell gatewar to the GPSD JSON sockets interface.
+Provides a Haskell gateway to the GPSD JSON sockets interface.
 
 # License
 
