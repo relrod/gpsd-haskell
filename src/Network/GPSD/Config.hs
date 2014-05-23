@@ -14,7 +14,6 @@ module Network.GPSD.Config
   , defaultConfig
   ) where
 
--- TODO: lens?
 -- | Configures how we should talk with the GPSD server.
 data GPSDConfig = GPSDConfig {
     _hostname :: String -- ^ The hostname to connect to.
