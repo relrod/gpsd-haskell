@@ -11,8 +11,9 @@
 
 module Network.GPSD.Config
   ( GPSDConfig (..)
-  , defaultConfig
   ) where
+
+import Data.Default
 
 -- | Configures how we should talk with the GPSD server.
 data GPSDConfig = GPSDConfig {
@@ -21,5 +22,5 @@ data GPSDConfig = GPSDConfig {
                         -- ^ Yes, it is a <https://hackage.haskell.org/package/network-2.4.1.2/docs/Network-Socket.html#v:getAddrInfo string>.
   } deriving (Eq, Show)
 
-defaultConfig :: GPSDConfig
-defaultConfig = GPSDConfig "localhost" "2947"
+instance Default GPSDConfig where
+  def = GPSDConfig "localhost" "2947"
