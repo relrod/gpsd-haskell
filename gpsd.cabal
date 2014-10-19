@@ -2,7 +2,7 @@ name:                gpsd
 version:             1.0.0
 synopsis:            A Haskell gateway to GPSD
 -- description:
-homepage:            https://github.com/CodeBlock/gpsd-haskell
+homepage:            https://github.com/relrod/gpsd-haskell
 license:             BSD3
 license-file:        LICENSE
 author:              Ricky Elrod
