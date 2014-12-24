@@ -1,6 +1,6 @@
 name:                gpsd
 version:             1.0.0
-synopsis:            A Haskell gateway to GPSD
+synopsis:            A Haskell gateway to GPSD via pipes
 -- description:
 homepage:            https://github.com/relrod/gpsd-haskell
 license:             BSD3
@@ -14,18 +14,15 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Network.GPSD
-                     , Network.GPSD.Config
-                     , Network.GPSD.Connection
-                     , Network.GPSD.Lens
+  -- exposed-modules:     Network.GPSD
   -- other-modules:
   -- other-extensions:
-  build-depends:       aeson >= 0.7 && < 0.8
+  build-depends:       aeson >= 0.8 && < 0.9
                      , base >= 4 && < 5
                      , bytestring >= 0.10 && < 0.11
                      , containers >= 0.5 && < 1
-                     , data-default >= 0.5 && < 0.6
-                     , io-streams >= 1.1 && < 1.2
+                     , pipes >= 4 && < 5
+                     , pipes-aeson >= 0.4 && < 0.4
                      , lens >= 4 && < 5
                      , network >= 2.4 && < 3
   hs-source-dirs:      src
