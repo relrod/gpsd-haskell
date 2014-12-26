@@ -15,6 +15,7 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Network.GPSD
+                     , Network.GPSD.Types
   -- other-modules:
   -- other-extensions:
   build-depends:       aeson >= 0.8 && < 0.9
