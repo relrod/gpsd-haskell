@@ -8,7 +8,7 @@ cabal haddock
 pushd "$f/gpsd-haskell.git"
   git checkout gh-pages && git rm -rf *
 popd
-mv dist/doc/html/gpsd-haskell/* "$f/gpsd-haskell.git/"
+mv dist/doc/html/gpsd/* "$f/gpsd-haskell.git/"
 pushd "$f/gpsd-haskell.git"
   git add -A
   git commit -m "Manual docs deploy."
