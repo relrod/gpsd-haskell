@@ -13,6 +13,7 @@ connectGPSD = withSocketsDo $ do
   let serverAddr = addrAddress (head addrinfo)
   s <- socket AF_INET Stream defaultProtocol
   connect s serverAddr
+  send s $ "?WATCH={\"enable\":true, \"json\":true}"
   return s
 
 socketToPipe :: MonadIO m
@@ -25,5 +26,4 @@ socketToPipe s = fromSocket s 4096
 debug :: IO ()
 debug = do
   s <- connectGPSD
-  send s $ "?WATCH={\"enable\":true, \"json\":true}"
   runEffect $ for (socketToPipe s) (lift . B.putStrLn)
