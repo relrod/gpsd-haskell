@@ -16,7 +16,7 @@ connectGPSD = withSocketsDo $ do
   let serverAddr = addrAddress (head addrinfo)
   s <- socket AF_INET Stream defaultProtocol
   connect s serverAddr
-  send s $ "?WATCH={\"enable\":true, \"json\":true}"
+  send s "?WATCH={\"enable\":true, \"json\":true}"
   return s
 
 socketToPipe :: MonadIO m
@@ -32,7 +32,7 @@ debug = do
   runEffect $ for (socketToPipe s) (lift . B.putStrLn)
 
 foo :: MonadIO m => Parser Tpv m ()
-foo = foldAllM (const $ liftIO . print) (return ()) (return)
+foo = foldAllM (const $ liftIO . print) (return ()) return
 
 bar :: Parser B.ByteString IO ()
 bar = zoom decoded foo
