@@ -3,6 +3,7 @@ module Network.GPSD where
 
 import Control.Lens
 import qualified Data.ByteString.Char8 as B
+import Data.Char
 import Network.GPSD.Types
 import Network.Socket hiding (send)
 import Pipes
@@ -32,7 +33,13 @@ debug = do
   runEffect $ for (socketToPipe s) (lift . B.putStrLn)
 
 foo :: MonadIO m => Parser Tpv m ()
-foo = foldAllM (const $ liftIO . print) (return ()) return
+foo = foldAllM (const $ return (return ())) (return ()) return
 
 bar :: Parser B.ByteString IO ()
 bar = zoom decoded foo
+
+debugParse :: IO ()
+debugParse = do
+  s <- connectGPSD
+  e <- execStateT bar (socketToPipe s)
+  runEffect $ for e (lift . putStrLn . map toUpper . show)
