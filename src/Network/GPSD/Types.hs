@@ -1,38 +1,40 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 module Network.GPSD.Types where
 
 import Control.Applicative
-import Control.Lens
+import Control.Lens hiding ((.=))
 import Data.Aeson
 import Data.Monoid (mempty)
 
-data TPV =
-  TPV { _tpvClass  :: String
-      , _tpvTag    :: Maybe String
-      , _tpvDevice :: Maybe String
-      , _tpvMode   :: Int
-      , _tpvTime   :: Maybe String
-      , _tpvEpt    :: Maybe Double
-      , _tpvLat    :: Maybe Double
-      , _tpvLon    :: Maybe Double
-      , _tpvAlt    :: Maybe Double
-      , _tpvEpx    :: Maybe Double
-      , _tpvEpy    :: Maybe Double
-      , _tpvEpv    :: Maybe Double
-      , _tpvTrack  :: Maybe Double
-      , _tpvSpeed  :: Maybe Double
-      , _tpvClimb  :: Maybe Double
-      , _tpvEpd    :: Maybe Double
-      , _tpvEps    :: Maybe Double
-      , _tpvEpc    :: Maybe Double
+data Tpv =
+  Tpv { tpvClass  :: String
+      , tpvTag    :: Maybe String
+      , tpvDevice :: Maybe String
+      , tpvMode   :: Int
+      , tpvTime   :: Maybe String
+      , tpvEpt    :: Maybe Double
+      , tpvLat    :: Maybe Double
+      , tpvLon    :: Maybe Double
+      , tpvAlt    :: Maybe Double
+      , tpvEpx    :: Maybe Double
+      , tpvEpy    :: Maybe Double
+      , tpvEpv    :: Maybe Double
+      , tpvTrack  :: Maybe Double
+      , tpvSpeed  :: Maybe Double
+      , tpvClimb  :: Maybe Double
+      , tpvEpd    :: Maybe Double
+      , tpvEps    :: Maybe Double
+      , tpvEpc    :: Maybe Double
       } deriving (Eq, Ord, Show)
 
-makeFields ''TPV
+makeFields ''Tpv
 
-instance FromJSON TPV where
+instance FromJSON Tpv where
   parseJSON (Object o) =
-    TPV <$>
+    Tpv <$>
       o .:  "class"  <*>
       o .:? "tag"    <*>
       o .:? "device" <*>
@@ -52,3 +54,62 @@ instance FromJSON TPV where
       o .:? "eps"    <*>
       o .:? "epc"
   parseJSON _ = mempty
+
+instance ToJSON Tpv where
+     toJSON (Tpv cl ta de mo ti ep la lo al epx' epy' epv' tr sp cli epd' eps' epc') =
+       object [ "class"  .= cl
+              , "tag"    .= ta
+              , "device" .= de
+              , "mode"   .= mo
+              , "time"   .= ti
+              , "ept"    .= ep
+              , "lat"    .= la
+              , "lon"    .= lo
+              , "alt"    .= al
+              , "epx"    .= epx'
+              , "epy"    .= epy'
+              , "epv"    .= epv'
+              , "track"  .= tr
+              , "speed"  .= sp
+              , "climb"  .= cli
+              , "epd"    .= epd'
+              , "eps"    .= eps'
+              , "epc"    .= epc'
+              ]
+
+data Satellite =
+  Satellite { satUsed      :: Bool
+            , satelliteSs  :: Integer
+            , satelliteAz  :: Integer
+            , satelliteEl  :: Integer
+            , satellitePrn :: Integer
+            } deriving (Eq, Ord, Show)
+
+makeFields ''Satellite
+
+instance FromJSON Satellite where
+  parseJSON (Object o) =
+    Satellite <$>
+      o .: "used" <*>
+      o .: "ss"   <*>
+      o .: "az"   <*>
+      o .: "el"   <*>
+      o .: "PRN"
+  parseJSON _ = mempty
+
+data Sky =
+  Sky { skyClass      :: String
+      , skyDevice     :: Maybe String
+      , skyTag        :: Maybe String
+      , skySatellites :: Maybe [Satellite]
+      , skyPdop       :: Maybe Double
+      , skyGdop       :: Maybe Double
+      , skyHdop       :: Maybe Double
+      , skyTdop       :: Maybe Double
+      , skyVdop       :: Maybe Double
+      , skyYdop       :: Maybe Double
+      , skyXdop       :: Maybe Double
+      , skyTime       :: Maybe String
+      } deriving (Eq, Ord, Show)
+
+makeFields ''Sky

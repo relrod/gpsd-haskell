@@ -25,6 +25,7 @@ library
                      , pipes >= 4 && < 5
                      , pipes-aeson >= 0.4 && < 0.5
                      , pipes-network >= 0.6 && < 0.7
+                     , pipes-parse >= 3 && < 4
                      , lens >= 4 && < 5
                      , network >= 2.4 && < 3
   hs-source-dirs:      src
