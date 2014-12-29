@@ -3,14 +3,13 @@ module Network.GPSD where
 
 import Control.Lens
 import qualified Data.ByteString.Char8 as B
-import Data.Char
 import Network.GPSD.Types
 import Network.Socket hiding (send)
 import Pipes
 import Pipes.Aeson (DecodingError)
 import Pipes.Aeson.Unchecked
 import Pipes.Network.TCP hiding (connect)
-import Pipes.Parse
+--import Pipes.Parse
 
 connectGPSD :: IO Socket
 connectGPSD = withSocketsDo $ do
@@ -33,18 +32,13 @@ debug = do
   s <- connectGPSD
   runEffect $ for (socketToPipe s) (lift . B.putStrLn)
 
-foo :: MonadIO m => Parser Tpv m ()
-foo = foldAllM (const $ return (return ())) (return ()) return
-
-bar :: Parser B.ByteString IO ()
-bar = zoom decoded foo
-
-footest :: Socket -> Producer Tpv IO (Either (DecodingError, Producer B.ByteString IO ()) ())
+footest :: Producer B.ByteString IO () -> Producer Tpv IO (Either (DecodingError, Producer B.ByteString IO ()) ())
 footest s =
-  view decoded (socketToPipe s)
+  view decoded s
 
-debugParse
-  :: IO (Either (DecodingError, Producer B.ByteString IO ()) ())
-debugParse = do
-  s <- connectGPSD
-  runEffect $ for (footest s) (\x -> lift . print $ (x ^. lat))
+bartest :: Producer B.ByteString IO () -> Producer Tpv IO ()
+bartest s = footest s >> return ()
+
+debugParse :: Socket -> IO ()
+debugParse s = do
+  runEffect $ for (bartest (socketToPipe s)) (\x -> lift . print $ (x ^. lat))
