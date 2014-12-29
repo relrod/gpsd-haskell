@@ -2,6 +2,7 @@
 module Network.GPSD where
 
 import Control.Lens
+import Data.Aeson (FromJSON, ToJSON)
 import qualified Data.ByteString.Char8 as B
 import Network.GPSD.Types
 import Network.Socket hiding (send)
@@ -33,12 +34,14 @@ debug = do
   s <- connectGPSD
   runEffect $ for (socketToPipe s) (lift . B.putStrLn)
 
-footest :: Producer B.ByteString IO ()
-        -> Producer Tpv IO (Either (DecodingError, Producer B.ByteString IO ()) ())
+footest :: (FromJSON m, ToJSON m)
+        => Producer B.ByteString IO ()
+        -> Producer m IO (Either (DecodingError, Producer B.ByteString IO ()) ())
 footest = view decoded
 
-skipErrors :: Producer PB.ByteString IO ()
-    -> Producer Tpv IO ()
+skipErrors :: (FromJSON m, ToJSON m)
+           => Producer PB.ByteString IO ()
+           -> Producer m IO ()
 skipErrors p = do
   x <- footest p
   case x of
@@ -52,4 +55,4 @@ skipErrors p = do
 debugParse :: Socket -> IO ()
 debugParse s =
   runEffect $
-    for (skipErrors (socketToPipe s)) (\x -> lift . print $ (x ^. time))
+    for (skipErrors (socketToPipe s) :: Producer Tpv IO ()) (\x -> lift . print $ (x ^. time))
