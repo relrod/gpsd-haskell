@@ -8,6 +8,7 @@ import Network.Socket hiding (send)
 import Pipes
 import Pipes.Aeson (DecodingError)
 import Pipes.Aeson.Unchecked
+import qualified Pipes.ByteString as PB
 import Pipes.Network.TCP hiding (connect)
 --import Pipes.Parse
 
@@ -32,13 +33,22 @@ debug = do
   s <- connectGPSD
   runEffect $ for (socketToPipe s) (lift . B.putStrLn)
 
-footest :: Producer B.ByteString IO () -> Producer Tpv IO (Either (DecodingError, Producer B.ByteString IO ()) ())
-footest s =
-  view decoded s
+footest :: Producer B.ByteString IO ()
+        -> Producer Tpv IO (Either (DecodingError, Producer B.ByteString IO ()) ())
+footest s = view decoded s
 
-bartest :: Producer B.ByteString IO () -> Producer Tpv IO ()
-bartest s = footest s >> return ()
+skipErrors :: Producer PB.ByteString IO ()
+    -> Producer Tpv IO ()
+skipErrors p = do
+  x <- footest p
+  case x of
+   Right r -> return r
+   Left (_, p') -> do
+     x' <- lift $ PB.nextByte p'
+     case x' of
+      Right (_, p'') -> skipErrors p''
+      Left r -> return r
 
 debugParse :: Socket -> IO ()
 debugParse s = do
-  runEffect $ for (bartest (socketToPipe s)) (\x -> lift . print $ (x ^. lat))
+  runEffect $ for (skipErrors (socketToPipe s)) (\x -> lift . print $ (x ^. time))
