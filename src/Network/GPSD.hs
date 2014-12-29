@@ -7,6 +7,7 @@ import Data.Char
 import Network.GPSD.Types
 import Network.Socket hiding (send)
 import Pipes
+import Pipes.Aeson (DecodingError)
 import Pipes.Aeson.Unchecked
 import Pipes.Network.TCP hiding (connect)
 import Pipes.Parse
@@ -38,8 +39,12 @@ foo = foldAllM (const $ return (return ())) (return ()) return
 bar :: Parser B.ByteString IO ()
 bar = zoom decoded foo
 
-debugParse :: IO ()
+footest :: Socket -> Producer Tpv IO (Either (DecodingError, Producer B.ByteString IO ()) ())
+footest s =
+  view decoded (socketToPipe s)
+
+debugParse
+  :: IO (Either (DecodingError, Producer B.ByteString IO ()) ())
 debugParse = do
   s <- connectGPSD
-  e <- execStateT bar (socketToPipe s)
-  runEffect $ for e (lift . putStrLn . map toUpper . show)
+  runEffect $ for (footest s) (\x -> lift . print $ (x ^. lat))
