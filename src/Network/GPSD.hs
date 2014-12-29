@@ -35,7 +35,7 @@ debug = do
 
 footest :: Producer B.ByteString IO ()
         -> Producer Tpv IO (Either (DecodingError, Producer B.ByteString IO ()) ())
-footest s = view decoded s
+footest = view decoded
 
 skipErrors :: Producer PB.ByteString IO ()
     -> Producer Tpv IO ()
@@ -50,5 +50,6 @@ skipErrors p = do
       Left r -> return r
 
 debugParse :: Socket -> IO ()
-debugParse s = do
-  runEffect $ for (skipErrors (socketToPipe s)) (\x -> lift . print $ (x ^. time))
+debugParse s =
+  runEffect $
+    for (skipErrors (socketToPipe s)) (\x -> lift . print $ (x ^. time))
