@@ -55,4 +55,4 @@ skipErrors p = do
 debugParse :: Socket -> IO ()
 debugParse s =
   runEffect $
-    for (skipErrors (socketToPipe s) :: Producer Tpv IO ()) (\x -> lift . print $ (x ^. time))
+    for (skipErrors (socketToPipe s) :: Producer Tpv IO ()) (\x -> lift . print $ x)

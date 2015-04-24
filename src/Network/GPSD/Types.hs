@@ -78,11 +78,11 @@ instance ToJSON Tpv where
               ]
 
 data Satellite =
-  Satellite { satUsed      :: Bool
-            , satelliteSs  :: Integer
-            , satelliteAz  :: Integer
-            , satelliteEl  :: Integer
-            , satellitePrn :: Integer
+  Satellite { satelliteUsed :: Bool
+            , satelliteSs   :: Integer
+            , satelliteAz   :: Integer
+            , satelliteEl   :: Integer
+            , satellitePrn  :: Integer
             } deriving (Eq, Ord, Show)
 
 makeFields ''Satellite
