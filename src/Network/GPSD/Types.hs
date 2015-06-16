@@ -7,10 +7,11 @@ module Network.GPSD.Types where
 import Control.Applicative
 import Control.Lens hiding ((.=))
 import Data.Aeson
-import Data.Monoid (mempty)
+import Data.Monoid
+import Prelude
 
 data Tpv =
-  Tpv { tpvClass  :: String
+  Tpv { tpvClass' :: String
       , tpvTag    :: Maybe String
       , tpvDevice :: Maybe String
       , tpvMode   :: Int
@@ -98,7 +99,7 @@ instance FromJSON Satellite where
   parseJSON _ = mempty
 
 data Sky =
-  Sky { skyClass      :: String
+  Sky { skyClass'     :: String
       , skyDevice     :: Maybe String
       , skyTag        :: Maybe String
       , skySatellites :: Maybe [Satellite]
